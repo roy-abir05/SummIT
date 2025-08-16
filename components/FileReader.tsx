@@ -32,7 +32,7 @@ export function FileReader({ onTextChange }: FileReaderProps) {
       if (text) {
         onTextChange(text);
         setFileName(file.name);
-        setTextInput(''); // Clear manual input when file is loaded
+        setTextInput(text); // Clear manual input when file is loaded
         toast.success(`File "${file.name}" loaded successfully`);
       }
     };
@@ -76,9 +76,10 @@ export function FileReader({ onTextChange }: FileReaderProps) {
   }, [onTextChange]);
 
   return (
-    <div className="space-y-4">
+    <div className="w-full space-y-4 flex items-center justify-evenly">
       {/* File Upload Area */}
-      {/*
+      
+      <div>
       <div
         onDrop={handleDrop}
         onDragOver={(e) => {
@@ -95,7 +96,7 @@ export function FileReader({ onTextChange }: FileReaderProps) {
         `}
       >
         <div className="space-y-3">
-          <Upload className="w-8 h-8 mx-auto text-gray-400" />
+          <Upload className="w-8 mx-auto text-gray-400" />
           <div>
             <p className="text-sm font-medium text-gray-700">
               Drop your .txt file here or
@@ -118,11 +119,10 @@ export function FileReader({ onTextChange }: FileReaderProps) {
           </p>
         </div>
       </div>
-      */}
-
+     
       {/* Show uploaded file info */}
       {fileName && (
-        <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+        <div className="h-10 flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
           <FileText className="w-4 h-4 text-green-600" />
           <span className="text-sm font-medium text-green-800 flex-1">
             {fileName}
@@ -137,6 +137,7 @@ export function FileReader({ onTextChange }: FileReaderProps) {
           </Button>
         </div>
       )}
+      </div>
 
       {/* Text Input Area */}
       <div className="space-y-2">
@@ -144,12 +145,12 @@ export function FileReader({ onTextChange }: FileReaderProps) {
           <Label htmlFor="text-input">
             Or paste your transcript directly:
           </Label>
-          {textInput && (
+          {textInput && !fileName && (
             <Button
               variant="ghost"
               size="sm"
               onClick={clearAll}
-              className="text-xs"
+              className="text-xs h-2 w-2"
             >
               Clear
             </Button>
@@ -163,11 +164,6 @@ export function FileReader({ onTextChange }: FileReaderProps) {
           className="min-h-[150px] resize-none"
           disabled={!!fileName} // Disable when file is loaded
         />
-        {textInput && (
-          <p className="text-xs text-gray-500">
-            {textInput.length} characters
-          </p>
-        )}
       </div>
     </div>
   );

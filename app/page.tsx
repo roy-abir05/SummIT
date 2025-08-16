@@ -22,27 +22,6 @@ export default function Home() {
   const [isSummaryFocused, setIsSummaryFocused] = useState(false);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
 
-  // Load saved data on mount
-  // useEffect(() => {
-  //   const savedSummary = localStorage.getItem("ai-summarizer-summary");
-  //   const savedInstructions = localStorage.getItem(
-  //     "ai-summarizer-instructions"
-  //   );
-
-  //   if (savedSummary) setSummary(savedSummary);
-  //   if (savedInstructions) setInstructions(savedInstructions);
-  // }, []);
-
-  // Auto-save instructions
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     if (instructions) {
-  //       localStorage.setItem("ai-summarizer-instructions", instructions);
-  //     }
-  //   }, 1000);
-  //   return () => clearTimeout(timer);
-  // }, [instructions]);
-
   const handleTranscriptChange = useCallback((text: string) => {
     setTranscript(text);
   }, []);
@@ -125,82 +104,70 @@ export default function Home() {
         >
           {/* Left Column - Input */}
           <div
-            className={`lg:col-span-1 space-y-6 transition-all duration-300 ${
+            className={`h-full box-border lg:col-span-1 space-y-6 transition-all duration-300 ${
               isSummaryFocused ? "hidden" : ""
             }`}
           >
             {/* File Input */}
-            <Card>
-              <CardHeader>
+            <Card className="h-full flex flex-col justify-evenly">
+              <CardHeader className="h-[10%]">
                 <CardTitle className="flex items-center gap-2">
                   <FileText className="w-5 h-5" />
                   Transcript Input
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <FileReader onTextChange={handleTranscriptChange} />
-                {transcript && (
-                  <div className="mt-4">
-                    <Badge variant="secondary" className="mb-2">
-                      {transcript.length} characters loaded
-                    </Badge>
-                    <div className="bg-gray-50 p-3 rounded-md max-h-32 overflow-y-auto text-sm">
-                      {transcript.substring(0, 200)}
-                      {transcript.length > 200 && "..."}
+              <CardContent className="w-full h-[85%] box-border checking px-0">
+                <div className="w-full h-full flex flex-col justify-between box-border">
+                  <CardContent className="w-full">
+                    <FileReader onTextChange={handleTranscriptChange} />
+                  </CardContent>
+                  <CardHeader className="w-full">
+                    <CardTitle className="w-full flex items-center gap-2">
+                      <Settings className="w-5 h-5" />
+                      Custom Instructions
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <Label htmlFor="instructions">
+                        Customize how you want the summary formatted (optional)
+                      </Label>
+                      <Textarea
+                        id="instructions"
+                        value={instructions}
+                        onChange={(e) => setInstructions(e.target.value)}
+                        placeholder={placeholderInstructions}
+                        className="min-h-[40px] resize-none"
+                      />
                     </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Instructions */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="w-5 h-5" />
-                  Custom Instructions
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <Label htmlFor="instructions">
-                    Customize how you want the summary formatted (optional)
-                  </Label>
-                  <Textarea
-                    id="instructions"
-                    value={instructions}
-                    onChange={(e) => setInstructions(e.target.value)}
-                    placeholder={placeholderInstructions}
-                    className="min-h-[40px] resize-none"
-                  />
+                  </CardContent>
+                  {/* Generate Button */}
+                  <Button
+                    onClick={handleGenerateSummary}
+                    disabled={!transcript.trim() || isGenerating}
+                    className="w-[calc(100%-3rem)] h-[10%] text-base gap-x-2 mx-6"
+                    size="lg"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        Generating Summary...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-5 h-5 mr-2" />
+                        Generate Summary
+                      </>
+                    )}
+                  </Button>
                 </div>
               </CardContent>
             </Card>
-
-            {/* Generate Button */}
-            <Button
-              onClick={handleGenerateSummary}
-              disabled={!transcript.trim() || isGenerating}
-              className="w-full h-12 text-base"
-              size="lg"
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Generating Summary...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-5 h-5 mr-2" />
-                  Generate Summary
-                </>
-              )}
-            </Button>
           </div>
 
           {/* Middle Column - Summary Display */}
           <div
-            className={`relative h-[70vh] lg:col-span-1 space-y-6 transition-all duration-300 cursor-pointer ${
+            className={`h-full lg:col-span-1 space-y-6 transition-all duration-300 cursor-pointer ${
               isSummaryFocused
                 ? "col-span-1 lg:col-span-1 w-full max-w-4xl mx-auto z-20"
                 : ""
@@ -236,10 +203,10 @@ export default function Home() {
               </button>
             )}
             <Card
-              className="h-full cursor-auto"
+              className="h-full cursor-auto flex flex-col justify-evenly"
               onClick={(e) => e.stopPropagation()}
             >
-              <CardHeader>
+              <CardHeader className="h-[10%]">
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <FileText className="w-5 h-5" />
@@ -268,8 +235,8 @@ export default function Home() {
                     onClick={() => {
                       setIsEmailModalOpen(true);
                     }}
-                    // disabled={summary?.length == 0}
-                    className="w-[75%] h-[10%] text-base gap-x-2"
+                    disabled={summary?.length == 0}
+                    className="w-full h-[10%] text-base gap-x-2"
                     size="lg"
                   >
                     <Share2></Share2>
@@ -296,7 +263,9 @@ export default function Home() {
                     <Share2 className="w-5 h-5" />
                     Share Summary
                   </div>
-                  <button onClick={() => setIsEmailModalOpen(false)}><X></X></button>
+                  <button onClick={() => setIsEmailModalOpen(false)}>
+                    <X></X>
+                  </button>
                 </CardTitle>
               </CardHeader>
               <CardContent>
