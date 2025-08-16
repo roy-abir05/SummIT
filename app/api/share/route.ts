@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateEmailList } from '@/lib/validation';
+import nodemailer from 'nodemailer';
 
 interface ShareRequest {
   html: string;
@@ -7,13 +8,6 @@ interface ShareRequest {
   subject: string;
 }
 
-/**
- * API Route: /api/share
- * Handles sending meeting summaries via email
- * 
- * TODO: Implement with Nodemailer/SendGrid
- * This is currently a mock implementation for development
- */
 export async function POST(request: NextRequest) {
   try {
     const body: ShareRequest = await request.json();
@@ -61,15 +55,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Simulate email sending delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // TODO: Replace this mock implementation with actual email service
-    // Example integration with Nodemailer:
-    /*
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
-      port: 587,
+      port: Number(process.env.SMTP_PORT) || 587,
       secure: false,
       auth: {
         user: process.env.SMTP_USER,
@@ -86,19 +74,6 @@ export async function POST(request: NextRequest) {
 
     const result = await transporter.sendMail(mailOptions);
     const messageId = result.messageId;
-    */
-
-    // Mock successful response
-    const messageId = `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
-    // Log email details for development
-    console.log('📧 Mock Email Sent:', {
-      to: validEmails,
-      subject: subject,
-      htmlLength: html.length,
-      messageId: messageId,
-      timestamp: new Date().toISOString(),
-    });
 
     return NextResponse.json({
       success: true,
