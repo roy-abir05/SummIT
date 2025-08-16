@@ -7,13 +7,11 @@ interface GenerateRequest {
   instruction?: string;
 }
 
-/**
- * API Route: /api/generate
- * Generates AI-powered summary from meeting transcript using Groq LLM
- */
+
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 async function getGroqChatCompletion(transcript: string, instruction: string) {
+
   const prompt = `
 You are an AI meeting summarizer.
 Summarize the following transcript into clear, concise notes.
@@ -21,8 +19,9 @@ Summarize the following transcript into clear, concise notes.
 Transcript:
 ${transcript}
 
-${instruction.length>0?'User Instructions:':''}
-${instruction}
+--- END OF TRANSCRIPT ---
+
+${instruction && `User Instructions:\n${instruction}`}
 
 Return the summary strictly in text format with proper line breaks (\n\n after each section and bullet)
 Format your response as:
@@ -34,7 +33,6 @@ Format your response as:
 - Key bullet points
 - Action items (with assignee if possible)
 `;
-
   const completion = await groq.chat.completions.create({
     model: "openai/gpt-oss-20b", // or another Groq-supported model
     messages: [{ role: "user", content: prompt }],
