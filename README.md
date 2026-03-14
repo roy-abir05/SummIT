@@ -11,6 +11,15 @@ Transform your meeting transcripts into actionable summaries with AI-powered ana
 - **💾 Auto-Save**: Drafts saved automatically to local storage
 - **📱 Responsive Design**: Works seamlessly on desktop and mobile
 
+## 🧠 AI Architecture & Prompt Engineering
+
+SummIT isn't just a basic pass-through wrapper; it implements specific context engineering techniques to ensure high-fidelity, actionable outputs from raw, noisy meeting transcripts.
+
+- **Model Selection & Latency:** Utilizes Groq's high-speed inference engine (Llama 3 / Mixtral) to ensure near-instantaneous processing of lengthy text blobs, prioritizing user experience without sacrificing reasoning quality.
+- **Context Engineering & Dynamic Prompting:** The `/api/generate` endpoint dynamically injects user-defined constraints (e.g., "Focus on budget decisions") into a hardened System Prompt. This steers the LLM to prioritize specific extraction tasks over generic summarization.
+- **Structured Output Parsing:** Engineered prompts to enforce a strict output schema, enabling the application to predictably parse the response into `keyPoints`, `actionItems`, `decisions`, and `participants` for the frontend UI.
+- **Handling Hallucinations (Evaluation Focus):** The prompt framework strictly instructs the model to only extract information present in the source transcript, minimizing hallucinations in the `actionItems` and `decisions` arrays.
+
 ## Quick Start
 
 1. **Install dependencies**:
@@ -158,6 +167,7 @@ SMTP_FROM=noreply@yourcompany.com
 
 ## Technology Stack
 
+- **AI/LLM**: Groq API (Llama 3 / Mixtral for low-latency inference)
 - **Framework**: Next.js 14 with App Router
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
